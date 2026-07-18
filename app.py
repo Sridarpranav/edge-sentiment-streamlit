@@ -5,140 +5,105 @@ import torch
 import pandas as pd
 import time
 
-# 1. High-End Premium Canvas Config
+# 1. Page Configuration
 st.set_page_config(
-    page_title="NSRLM LAB | Edge Distillation",
+    page_title="NSRLM LAB",
     page_icon="⚡",
     layout="centered"
 )
 
-# 2. Luxury Web App Theming (Rolls-Royce Inspired Aesthetic)
+# 2. Premium High-Contrast Typography & Dynamic Layout Rules
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&display=swap');
 
-    /* Fixed ambient video canvas layer */
-    .video-bg-container {
-        position: fixed;
-        top: 0; left: 0; width: 100vw; height: 100vh;
-        z-index: -2;
-        overflow: hidden;
+    /* Global Typography overrides */
+    h1, h2, h3, h4, .premium-header {
+        font-family: 'Space Grotesk', sans-serif !important;
+        letter-spacing: -0.03em !important;
     }
-    
-    .video-bg-container video {
-        width: 100vw; height: 100vh;
-        object-fit: cover;
+    p, span, label, input, .stMarkdown {
+        font-family: 'Inter', sans-serif !important;
     }
 
-    /* Ambient Luxury Light/Dark Variable Engine using media tags */
+    /* Light Mode Variables & Structuring */
     @media (prefers-color-scheme: light) {
         .stApp {
-            background: rgba(24df, 246, 240, 0.85);
-            color: #0f172a !important;
+            background-color: #f9f6f0 !important; /* Premium Editorial Cream */
+            color: #111827 !important;
         }
-        .luxury-card {
-            background: rgba(255, 255, 255, 0.8) !important;
-            backdrop-filter: blur(25px) saturate(160%);
-            border: 1px solid rgba(16, 185, 129, 0.25);
-            box-shadow: 0 30px 60px rgba(16, 185, 129, 0.06);
+        .dashboard-card {
+            background-color: #ffffff !important;
+            border: 1px solid #e5e7eb !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
         }
-        .luxury-title { color: #080c14 !important; }
-        .luxury-text { color: #334155 !important; }
-        .luxury-subtext { color: #64748b !important; }
-        div[data-testid='stFileUploader'] {
-            background: rgba(255, 255, 255, 0.7) !important;
-            border: 1px dashed rgba(16, 185, 129, 0.4) !important;
-        }
+        .metric-label { color: #6b7280 !important; }
+        .bottom-bar { background-color: #ffffff !important; border-top: 1px solid #e5e7eb; }
     }
 
+    /* Dark Mode Variables & Structuring */
     @media (prefers-color-scheme: dark) {
         .stApp {
-            background: rgba(10, 14, 12, 0.9);
-            color: #f8fafc !important;
+            background-color: #0d0f0e !important; /* Luxury Deep Obsidian */
+            color: #f9fafb !important;
         }
-        .luxury-card {
-            background: rgba(13, 20, 18, 0.75) !important;
-            backdrop-filter: blur(25px) saturate(180%);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+        .dashboard-card {
+            background-color: #161917 !important;
+            border: 1px solid #242926 !important;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
         }
-        .luxury-title { color: #ffffff !important; }
-        .luxury-text { color: #e2e8f0 !important; }
-        .luxury-subtext { color: #94a3b8 !important; }
-        div[data-testid='stFileUploader'] {
-            background: rgba(18, 28, 25, 0.6) !important;
-            border: 1px dashed rgba(16, 185, 129, 0.3) !important;
-        }
+        .metric-label { color: #9ca3af !important; }
+        .bottom-bar { background-color: #161917 !important; border-top: 1px solid #242926; }
     }
 
-    /* Top-Tier Structural Typography overrides */
-    h1, h2, h3, .luxury-title {
-        font-family: 'Space Grotesk', sans-serif !important;
-        letter-spacing: -0.04em !important;
-    }
-    p, label, span, .luxury-text {
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
+    /* Unified Layout Blocks */
+    .dashboard-card {
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
     }
 
-    /* File Uploader Custom Polish */
-    div[data-testid='stFileUploader'] {
-        border-radius: 20px;
-        padding: 24px;
-        transition: all 0.4s ease;
-    }
-
-    /* Pure Luxury Performance Button Elements */
+    /* Ultra-Clean High-Contrast Action Buttons */
     .stButton>button { 
-        background: linear-gradient(135deg, #10b981 0%, #047857 100%) !important; 
-        color: #ffffff !important; 
+        background-color: #10b981 !important; 
+        color: white !important; 
         width: 100%; 
-        border-radius: 14px; 
+        border-radius: 8px; 
         border: none; 
-        padding: 16px; 
-        font-size: 15px;
-        font-weight: 700; 
-        letter-spacing: 0.05em;
+        padding: 14px; 
+        font-size: 14px;
+        font-weight: 600; 
+        letter-spacing: 0.03em;
         text-transform: uppercase;
-        box-shadow: 0 12px 30px rgba(16, 185, 129, 0.25);
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: opacity 0.2s ease;
     }
     .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 20px 40px rgba(16, 185, 129, 0.4);
+        opacity: 0.9;
     }
 
-    /* Metrics presentation enhancements */
-    div[data-testid="stMetricValue"] {
-        font-family: 'Space Grotesk', sans-serif !important;
-        font-size: 32px !important;
-        font-weight: 700 !important;
-        color: #10b981 !important;
+    /* Clean up the file uploader styling */
+    div[data-testid='stFileUploader'] {
+        border-radius: 12px;
+        padding: 15px;
     }
 </style>
-
-<!-- Deep Abstract Emerald Floral/Wave Ambient Motion Loop -->
-<div class="video-bg-container">
-    <video autoplay loop muted playsinline>
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-emerald-green-ink-flow-42998-large.mp4" type="video/mp4">
-    </video>
-</div>
 """, unsafe_allow_html=True)
 
-# 3. High-End Minimalist Lab Navbar Header
+# 3. Minimal Editorial Navbar Header
 st.markdown("""
-<div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid rgba(16, 185, 129, 0.15); margin-bottom: 40px;">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; margin-bottom: 30px;">
     <div>
-        <h1 style="font-size: 20px; font-weight: 700; margin: 0; letter-spacing: 0.1em; text-transform: uppercase;">NSRLM <span style="color: #10b981;">LAB</span></h1>
+        <h1 style="font-size: 18px; font-weight: 700; margin: 0; letter-spacing: 0.05em;">NSRLM <span style="color: #10b981;">LAB</span></h1>
     </div>
-    <div style="font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; background: rgba(16, 185, 129, 0.1); padding: 6px 14px; border-radius: 30px; border: 1px solid rgba(16, 185, 129, 0.2); color: #10b981;">
-        EDGE QUANTIZED
+    <div style="font-size: 10px; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; color: #10b981;">
+        01 / WORKSPACE
     </div>
 </div>
 """, unsafe_allow_html=True)
 
 # 4. Premium Headline Block
-st.markdown('<h2 class="luxury-title" style="font-size: 42px; font-weight: 800; line-height: 1.1; margin-bottom: 8px;">Compress the intelligence,<br><span style="background: linear-gradient(90deg, #10b981, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">not the performance.</span></h2>', unsafe_allow_html=True)
-st.markdown('<p class="luxury-subtext" style="font-size: 15px; line-height: 1.6; max-width: 540px; margin-bottom: 35px;">Distill massive, resource-heavy Large Language Models directly into zero-latency, sub-50MB runtimes perfectly calibrated for smartphones and Raspberry Pi devices.</p>', unsafe_allow_html=True)
+st.markdown('<h2 style="font-size: 34px; font-weight: 700; line-height: 1.15; margin-bottom: 8px;">Find the metrics making your edge devices unstable.</h2>', unsafe_allow_html=True)
+st.markdown('<p style="font-size: 15px; line-height: 1.5; opacity: 0.8; margin-bottom: 30px;">Evaluate optimization footprints and inference speed constraints instantly across mobile hardware configurations.</p>', unsafe_allow_html=True)
 
 # 5. Core Optimized Model Loader Execution
 @st.cache_resource
@@ -151,29 +116,31 @@ try:
     tokenizer, model = load_model()
 
     # --- LUXURY DIGITAL HARDWARE DIALS ---
-    st.markdown('<div class="luxury-card" style="padding: 24px; border-radius: 20px; margin-bottom: 35px;">', unsafe_allow_html=True)
-    st.markdown('<h4 class="luxury-title" style="margin-top: 0; margin-bottom: 20px; font-size: 16px; text-transform: uppercase; letter-spacing: 0.05em; color: #10b981;">Engine Distillation Diagnostics</h4>', unsafe_allow_html=True)
+    st.markdown('<div class="dashboard-card">', unsafe_allow_html=True)
     m1, m2, m3 = st.columns(3)
     with m1:
-        st.metric(label="Teacher Profile", value="400 MB")
+        st.markdown('<span style="font-size: 11px; text-transform: uppercase;" class="metric-label">Large AI Size</span>', unsafe_allow_html=True)
+        st.markdown('<h3 style="margin: 5px 0 0 0; font-size: 24px; font-weight: 700;">400 MB</h3>', unsafe_allow_html=True)
     with m2:
-        st.metric(label="Student Footprint", value="50 MB")
+        st.markdown('<span style="font-size: 11px; text-transform: uppercase;" class="metric-label">Small SLM Size</span>', unsafe_allow_html=True)
+        st.markdown('<h3 style="margin: 5px 0 0 0; font-size: 24px; font-weight: 700; color: #10b981;">50 MB</h3>', unsafe_allow_html=True)
     with m3:
-        st.metric(label="Edge Target Speed", value="< 15ms")
+        st.markdown('<span style="font-size: 11px; text-transform: uppercase;" class="metric-label">Target Latency</span>', unsafe_allow_html=True)
+        st.markdown('<h3 style="margin: 5px 0 0 0; font-size: 24px; font-weight: 700;">&lt; 15ms</h3>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- ADVANCED HIGH-CLASS FILE DROPS ---
-    st.markdown('### Drop in a dataset. Get compressed inference.')
+    st.markdown('<h3 style="font-size: 20px; font-weight: 700; margin-bottom: 10px;">Drop in a table. Get a diagnosis.</h3>', unsafe_allow_html=True)
     uploaded_file = st.file_uploader("Upload CSV Matrix", type=["csv"], label_visibility="collapsed")
 
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
-        st.markdown("<br><h4 class='luxury-title'>Source Preview</h4>", unsafe_allow_html=True)
-        st.dataframe(df.head(3))
+        st.markdown("<br><span style='font-size: 12px; font-weight:700; text-transform:uppercase;'>Dataset View</span>", unsafe_allow_html=True)
+        st.dataframe(df.head(3), use_container_width=True)
         
-        text_col = st.selectbox("Specify Inference Column Target Target", df.columns)
+        text_col = st.selectbox("Specify target evaluation column", df.columns)
         
-        if st.button("Initialize High-Speed Batch Run"):
+        if st.button("Run Diagnostics Pipeline"):
             with st.spinner("Processing token array configurations across edge compilation parameters..."):
                 texts = df[text_col].astype(str).tolist()
                 
@@ -185,23 +152,24 @@ try:
                 end_time = time.time()
                 
                 logits = outputs.logits.tolist()
-                df['Optimized Overhead Latency'] = f"{(end_time - start_time)/len(texts)*1000:.2f} ms/item"
-                df['Quantized State Matrix Output'] = [str([round(v, 4) for v in row]) for row in logits]
+                df['Latency Target'] = f"{(end_time - start_time)/len(texts)*1000:.2f} ms"
+                df['State Vector Output'] = [str([round(v, 4) for v in row]) for row in logits]
                 
-                st.markdown("<br><h4 class='luxury-title'>Distilled State Output Map</h4>", unsafe_allow_html=True)
-                st.dataframe(df)
+                st.markdown("<br><span style='font-size: 12px; font-weight:700; text-transform:uppercase;'>Diagnostic Board Output</span>", unsafe_allow_html=True)
+                st.dataframe(df, use_container_width=True)
                 
                 processed_csv = df.to_csv(index=False).encode('utf-8')
-                st.download_button("📥 Export Distilled Metrics Logs", data=processed_csv, file_name="nsrlm_edge_analytics.csv", mime="text/csv")
+                st.markdown("<br>", unsafe_allow_html=True)
+                st.download_button("📥 Export Performance Logs", data=processed_csv, file_name="nsrlm_edge_analytics.csv", mime="text/csv")
 
     # --- PREMIUM MOBILE DEMO BENCHMARK PANEL ---
     st.markdown("<br>", unsafe_allow_html=True)
-    show_demo = st.checkbox("🔮 Launch Real-Time Edge Benchmarker Simulator", value=True)
+    show_demo = st.checkbox("🔮 Launch Real-Time Sequence Simulator", value=True)
 
     if show_demo:
-        st.markdown("<div class='luxury-card' style='padding: 24px; border-radius: 20px;'>", unsafe_allow_html=True)
-        user_text = st.text_area("Live Input Text Stream Container:", "Simulating rapid inference pipeline processing constraints within modern mobile processor sandboxes.")
-        if st.button("Verify Local Inference"):
+        st.markdown("<div class='dashboard-card'>", unsafe_allow_html=True)
+        user_text = st.text_area("Live Input Text Container:", "Simulating processing constraints within modern mobile processor sandboxes.")
+        if st.button("Process Live Sequence"):
             start = time.time()
             demo_inputs = tokenizer(user_text, return_tensors="pt", truncation=True, max_length=64)
             with torch.no_grad():
@@ -209,9 +177,9 @@ try:
             latency = (time.time() - start) * 1000
             
             st.markdown(f"""
-            <div style="background-color: rgba(16, 185, 129, 0.12); border-left: 4px solid #10b981; border-radius: 6px; padding: 18px; margin-top: 20px;">
-                <div style="color: #10b981; font-weight: 700; font-family: 'Space Grotesk', sans-serif; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; margin-bottom: 4px;">✓ Localized Runtime Profile Complete</div>
-                <div style="font-size: 14px;" class="luxury-text">Target Compaction Bound: <strong>~50 MB Binary Target</strong> | System Execution Metric: <strong>{latency:.2f}ms latency</strong></div>
+            <div style="background-color: rgba(16, 185, 129, 0.1); border-left: 3px solid #10b981; border-radius: 4px; padding: 15px; margin-top: 15px;">
+                <div style="color: #10b981; font-weight: 700; font-family: 'Space Grotesk', sans-serif; font-size: 11px; letter-spacing: 0.05em; margin-bottom: 2px;">✓ LOCAL COMPILER RUN SUCCESSFUL</div>
+                <div style="font-size: 13px;">Binary Footprint: <strong>~50 MB Target</strong> | Latency Metric: <strong>{latency:.2f}ms</strong></div>
             </div>
             """, unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
@@ -219,19 +187,19 @@ try:
 except Exception as e:
     st.error(f"Error executing engine backend architecture: {e}")
 
-# Spacer ensuring content doesn't collide with fixed navigation bar layout
+# Padding spacer for sticky bottom navigation layout compatibility
 st.markdown("<br><br><br><br>", unsafe_allow_html=True)
 
 # 6. Bespoke Fixed Ultra-Premium Mobile Bottom Navigation Track
 st.markdown("""
-<div style="position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(16, 185, 129, 0.2); padding: 16px 0; display: flex; justify-content: space-around; text-align: center; z-index: 999999;">
+<div class="bottom-bar" style="position: fixed; bottom: 0; left: 0; width: 100%; padding: 14px 0; display: flex; justify-content: space-around; text-align: center; z-index: 999999;">
     <div style="color: #10b981; font-weight: 700; font-family: 'Space Grotesk', sans-serif; font-size: 11px; letter-spacing: 0.05em; cursor: pointer;">
         ⚡<br>WORKSPACE
     </div>
-    <div style="color: #94a3b8; font-weight: 500; font-family: 'Space Grotesk', sans-serif; font-size: 11px; letter-spacing: 0.05em; cursor: pointer;">
+    <div style="opacity: 0.5; font-weight: 500; font-family: 'Space Grotesk', sans-serif; font-size: 11px; letter-spacing: 0.05em; cursor: pointer;">
         📊<br>ANALYSIS
     </div>
-    <div style="color: #94a3b8; font-weight: 500; font-family: 'Space Grotesk', sans-serif; font-size: 11px; letter-spacing: 0.05em; cursor: pointer;">
+    <div style="opacity: 0.5; font-weight: 500; font-family: 'Space Grotesk', sans-serif; font-size: 11px; letter-spacing: 0.05em; cursor: pointer;">
         🌿<br>METHOD
     </div>
 </div>
