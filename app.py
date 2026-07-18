@@ -5,125 +5,129 @@ import torch
 import pandas as pd
 import time
 
-# 1. Clean Page Setup
+# 1. Page Configuration
 st.set_page_config(
     page_title="EdgeDistill - Model Compression Engine",
     page_icon="⚡",
     layout="centered"
 )
 
-# 2. Premium High-Tech Node Interface Stylesheet
+# 2. Dynamic High-Contrast Theming with Floral/Landscape Overlay Aesthetics
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap');
-
-    /* High-Tech Immersive Particle Network Canvas Background */
-    .stApp {
-        background: linear-gradient(rgba(5, 19, 41, 0.9), rgba(2, 8, 19, 0.95)), 
-                    url('https://images.unsplash.com/photo-1544256718-3bcf237f3974?q=80&w=1600&auto=format&fit=crop') !important;
-        background-size: cover !important;
-        background-position: center !important;
-        background-attachment: fixed !important;
-        color: #f8fafc !important;
-    }
-    
-    /* Clean, Non-overlapping Typography Hierarchy */
-    h1, h2, h3, h4 {
-        font-family: 'Space Grotesk', sans-serif !important;
-        color: #ffffff !important;
-        letter-spacing: -0.02em !important;
-    }
-    p, label, span, div, .stMarkdown {
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
+    /* Base configuration capturing Streamlit theme context variables */
+    :root {
+        --accent-emerald: #10b981;
     }
 
-    /* Structured Analytics Dashboard Cards (High-Class UI) */
-    .analytics-card {
-        background-color: rgba(11, 21, 40, 0.8) !important;
-        border: 1px solid #162a4e !important;
-        backdrop-filter: blur(10px);
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 16px;
-        position: relative;
-    }
-    
-    .engine-type {
-        font-size: 11px;
-        color: #64748b;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 4px;
-    }
-    
-    .metric-title {
-        font-size: 14px;
-        font-weight: 600;
-        color: #f1f5f9;
-        margin-bottom: 12px;
-    }
-    
-    .metric-value {
-        font-size: 26px;
-        font-weight: 700;
-        color: #ffffff;
-        font-family: 'Space Grotesk', sans-serif !important;
+    /* Light Mode Styles (Triggered by default/light state) */
+    @media (prefers-color-scheme: light) {
+        .stApp {
+            background: linear-gradient(rgba(255, 255, 255, 0.88), rgba(244, 245, 247, 0.92)), 
+                        url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1600&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #0f172a !important;
+        }
+        .main-card, div[data-testid='stFileUploader'] {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(16, 185, 129, 0.3) !important;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08) !important;
+        }
+        h1, h2, h3, h4, p, label, .stMarkdown {
+            color: #0f172a !important;
+        }
+        .pipeline-container {
+            background: rgba(255, 255, 255, 0.9) !important;
+            border: 1px solid #cbd5e1 !important;
+        }
+        .pipeline-text { color: #334155 !important; }
+        .sub-text { color: #64748b !important; }
+        .bottom-nav { background-color: rgba(255, 255, 255, 0.96) !important; border-top: 1px solid #e2e8f0; }
     }
 
-    /* Absolute Placement Inline Tags */
-    .status-tag {
-        float: right;
-        background: rgba(30, 64, 175, 0.3);
-        border: 1px solid #1d4ed8;
-        color: #60a5fa;
-        font-size: 10px;
-        font-weight: 600;
-        padding: 4px 10px;
-        border-radius: 6px;
-        text-transform: uppercase;
-        margin-top: -24px;
+    /* Dark Mode Styles (Triggered automatically when system/app is set to dark) */
+    @media (prefers-color-scheme: dark) {
+        .stApp {
+            background: linear-gradient(rgba(10, 15, 30, 0.88), rgba(15, 23, 42, 0.95)), 
+                        url('https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1600&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #f8fafc !important;
+        }
+        .main-card, div[data-testid='stFileUploader'] {
+            background-color: rgba(15, 23, 42, 0.9) !important;
+            border: 1px solid rgba(16, 185, 129, 0.4) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+        }
+        h1, h2, h3, h4, p, label, .stMarkdown {
+            color: #f8fafc !important;
+        }
+        .pipeline-container {
+            background: rgba(30, 41, 59, 0.8) !important;
+            border: 1px solid #334155 !important;
+        }
+        .pipeline-text { color: #f1f5f9 !important; }
+        .sub-text { color: #94a3b8 !important; }
+        .bottom-nav { background-color: rgba(15, 23, 42, 0.96) !important; border-top: 1px solid #334155; }
     }
 
-    /* Premium Button Custom Tuning */
+    /* Shared UI Element Overrides */
     .stButton>button { 
-        background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%) !important; 
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; 
         color: white !important; 
         width: 100%; 
-        border-radius: 8px; 
-        border: 1px solid #3b82f6; 
+        border-radius: 10px; 
+        border: none; 
         padding: 12px; 
         font-weight: 600; 
-        font-size: 14px;
-        letter-spacing: 0.02em;
-        text-transform: uppercase;
-        box-shadow: 0 4px 15px rgba(29, 78, 216, 0.3);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        transition: transform 0.2s ease;
     }
-
-    /* Streamlit File Uploader Clean Architecture Override */
+    .stButton>button:hover {
+        transform: translateY(-1px);
+    }
+    
     div[data-testid='stFileUploader'] {
-        background-color: rgba(11, 21, 40, 0.8) !important;
-        border: 1px dashed #162a4e !important;
-        border-radius: 12px;
-        padding: 16px;
-    }
-
-    /* Custom adjustments to natively styled streamlit dataframes */
-    .stDataFrame {
-        background-color: rgba(11, 21, 40, 0.6) !important;
-        border-radius: 8px;
+        border-radius: 16px;
+        padding: 20px;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# 3. Premium Top Navbar Header
+# 3. Clean Product Header Custom Design
+st.markdown('<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 2px solid rgba(16, 185, 129, 0.2); margin-bottom: 30px;"><div><h1 style="font-size: 24px; font-weight: 800; margin: 0;">Edge<span style="color: #10b981;">Distill</span></h1><div style="font-size: 11px; letter-spacing: 1px; text-transform: uppercase; margin-top: -5px;" class="sub-text">Small Language Model Distillation</div></div><div style="background: rgba(16, 185, 129, 0.15); padding: 6px 16px; border-radius: 20px; font-size: 13px; border: 1px solid rgba(16, 185, 129, 0.3); font-weight: 600; color: #10b981;">⚡ Adaptive Engine</div></div>', unsafe_allow_html=True)
+
+# 4. Core Blueprint Pipeline Flow Visual
+st.markdown('<div style="text-align: center; margin-top: 10px;"><span style="display: inline-block; background-color: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;">📱 Small Language Model Distillation Pipeline Blueprint</span></div>', unsafe_allow_html=True)
+
 st.markdown("""
-<div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #162a4e; margin-bottom: 30px;">
-    <h1 style="font-size: 18px; font-weight: 700; margin: 0; letter-spacing: 0.05em;">Edge<span style="color: #3b82f6;">Distill</span></h1>
-    <div style="font-size: 11px; color: #3b82f6; font-weight: 700; letter-spacing: 0.05em;">⚡ ADAPTarget ENGINE</div>
+<div class="pipeline-container" style="display: flex; justify-content: space-between; align-items: center; padding: 20px; border-radius: 12px; margin: 25px 0; text-align: center;">
+    <div style="flex: 1;">
+        <div class="pipeline-text" style="font-weight: 700;">Large AI Model</div>
+        <div class="sub-text" style="font-size: 13px;">~400 MB (Heavy)</div>
+    </div>
+    <div style="color: #10b981; font-weight: bold; font-size: 20px;">➔</div>
+    <div style="flex: 1; background: rgba(16, 185, 129, 0.1); padding: 8px; border-radius: 8px; border: 1px dashed #10b981;">
+        <div style="font-weight: 700; color: #10b981;">Distillation</div>
+        <div style="font-size: 11px; color: #10b981;">Quantization Matrix</div>
+    </div>
+    <div style="color: #10b981; font-weight: bold; font-size: 20px;">➔</div>
+    <div style="flex: 1;">
+        <div class="pipeline-text" style="font-weight: 700;">Small Student Model</div>
+        <div class="sub-text" style="font-size: 13px;">~50 MB (Optimized)</div>
+    </div>
+    <div style="color: #10b981; font-weight: bold; font-size: 20px;">➔</div>
+    <div style="flex: 1;">
+        <div style="font-weight: 700; color: #10b981;">Edge Deployment</div>
+        <div class="sub-text" style="font-size: 13px;">Mobile / Raspberry Pi</div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
-# 4. Core Optimized Model Core Execution
+# 5. Core Optimized Model Loader
 @st.cache_resource
 def load_model():
     tokenizer = AutoTokenizer.from_pretrained(".")
@@ -133,85 +137,56 @@ def load_model():
 try:
     tokenizer, model = load_model()
 
-    # --- TARGET ANALYTICS GRID GENERATION (As requested in image) ---
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("""
-        <div class="analytics-card">
-            <div class="engine-type">ONNX Edge Optimization</div>
-            <div class="metric-title">Quantized Binary Footprint</div>
-            <div class="status-tag">Inference Optimal</div>
-            <div class="metric-value">50 MB</div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown("""
-        <div class="analytics-card">
-            <div class="engine-type">Hardware Target Specs</div>
-            <div class="metric-title">Device Resource Matrix</div>
-            <div class="status-tag">Edge Verified</div>
-            <div class="metric-value">Mobile & Pi</div>
-        </div>
-        """, unsafe_allow_html=True)
+    # --- ARCHITECTURE METRICS COMPARISON BENCHMARK ---
+    st.markdown("### 📊 Hardware Target Metrics")
+    m1, m2, m3 = st.columns(3)
+    with m1:
+        st.metric(label="Large Teacher Footprint", value="400 MB")
+    with m2:
+        st.metric(label="Small Student Footprint", value="50 MB")
+    with m3:
+        st.metric(label="Edge Operational Latency", value="< 15ms")
 
-    with col2:
-        st.markdown("""
-        <div class="analytics-card">
-            <div class="engine-type">Execution Profile</div>
-            <div class="metric-title">Target Pipeline Latency</div>
-            <div class="status-tag">Structural Match</div>
-            <div class="metric-value">&lt; 15.0ms</div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown("""
-        <div class="analytics-card">
-            <div class="engine-type">Compression Engine Ratio</div>
-            <div class="metric-title">SLM Distillation Delta</div>
-            <div class="status-tag">SHAP Verified</div>
-            <div class="metric-value">8.0x Optimization</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    # --- STREAMLINED MATRIX PROCESSING SECTION ---
-    st.markdown("<br><h3 style='font-size: 18px; font-weight:700;'>Drop in a table. Get a diagnosis.</h3>", unsafe_allow_html=True)
-    uploaded_file = st.file_uploader("Upload Target Matrix (CSV)", type=["csv"], label_visibility="collapsed")
+    # --- DATASET COMPRESSION PIPELINE ---
+    st.markdown("<br>### 📂 Batch Compression Testbed", unsafe_allow_html=True)
+    uploaded_file = st.file_uploader("Upload Text Dataset for Edge Evaluation (CSV)", type=["csv"])
 
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
-        st.markdown("<span style='font-size: 12px; font-weight:700; text-transform:uppercase; color:#64748b;'>Source Input Matrix Preview</span>", unsafe_allow_html=True)
-        st.dataframe(df.head(3), use_container_width=True)
+        st.markdown("#### 📋 Source Text Input Preview")
+        st.dataframe(df.head(5))
         
         text_col = st.selectbox("Select target text column to evaluate:", df.columns)
         
-        if st.button("Initialize Matrix Batch Run"):
-            with st.spinner("Streaming array parameters through edge layer..."):
+        if st.button("⚡ Run Compact Student Inference"):
+            with st.spinner("Streaming data rows through the compressed 50MB edge runtime layer..."):
                 texts = df[text_col].astype(str).tolist()
+                
                 start_time = time.time()
                 inputs = tokenizer(texts, padding=True, truncation=True, max_length=64, return_tensors="pt")
+                
                 with torch.no_grad():
                     outputs = model(**inputs)
                 end_time = time.time()
                 
                 logits = outputs.logits.tolist()
-                df['Inference Latency'] = f"{(end_time - start_time)/len(texts)*1000:.2f} ms"
-                df['State Vector Output'] = [str([round(v, 4) for v in row]) for row in logits]
                 
-                st.markdown("<br><h4 style='font-size: 14px; text-transform: uppercase; color: #3b82f6;'>Diagnostic Analysis Matrices Map</h4>", unsafe_allow_html=True)
-                st.dataframe(df, use_container_width=True)
+                df['Optimized Latency'] = f"{(end_time - start_time)/len(texts)*1000:.2f} ms/row"
+                df['Processed Internal State Vector'] = [str([round(v, 3) for v in row]) for row in logits]
+                
+                st.markdown("#### ✨ Compressed Edge Inference Engine Matrix")
+                st.dataframe(df)
                 
                 processed_csv = df.to_csv(index=False).encode('utf-8')
                 st.download_button("📥 Export Edge Performance Records", data=processed_csv, file_name="distilled_edge_performance.csv", mime="text/csv")
 
-    # --- REAL-TIME HIGH-TECH SIMULATOR CONSOLE ---
+    # --- REAL-TIME INFERENCE TESTING ---
     st.markdown("<br>", unsafe_allow_html=True)
-    show_demo = st.checkbox("Launch Real-Time Sequence Simulator 🔮", value=True)
+    show_demo = st.checkbox("🔮 Show Real-time Edge Benchmarker Panel", value=True)
 
     if show_demo:
-        st.markdown("<div class='analytics-card'>", unsafe_allow_html=True)
-        user_text = st.text_area("Input Stream Container Sequence Entry:", "Evaluating optimization constraints on local client hardware parameters.", label_visibility="collapsed")
-        
+        st.markdown("<div class='main-card'>", unsafe_allow_html=True)
+        user_text = st.text_area("Input Text Sequence to Verify Compression Engine Performance:", "Testing real-time latency optimization matrices on localized client hardware parameters.")
         if st.button("Process Live Sequence"):
             start = time.time()
             demo_inputs = tokenizer(user_text, return_tensors="pt", truncation=True, max_length=64)
@@ -220,24 +195,42 @@ try:
             latency = (time.time() - start) * 1000
             
             st.markdown(f"""
-            <div style="background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; border-radius: 6px; padding: 14px; margin-top: 15px; font-size: 13px;">
-                <span style="color: #60a5fa; font-weight: 700; display: block; margin-bottom: 2px;">✓ LOCAL SUBSYSTEM VERIFIED</span>
-                Runtime Latency Delta: <strong>{latency:.2f}ms</strong> | Compressed Compaction Footprint: <strong>~50MB Binary Block</strong>
+            <div style="background-color: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; border-radius: 8px; padding: 15px; margin-top: 15px;">
+                <span style="color: #10b981; font-weight: 700;">✓ Edge Execution Profile Complete</span><br>
+                <small>Small Model Runtime Memory Footprint: <strong>~50 MB</strong> | Real-Time Execution Overhead: <strong>{latency:.2f}ms</strong></small>
             </div>
             """, unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
 except Exception as e:
-    st.error(f"System Operational Architecture Load Failure: {e}")
+    st.error(f"Error executing engine backend architecture: {e}")
 
-# Padding offset to protect usability against fixed footer overlapping
-st.markdown("<br><br><br>", unsafe_allow_html=True)
+# 6. Extra Tech-Stack Specs Blueprint at the Bottom
+st.markdown("---")
+st.markdown("### 🛠️ Architecture Specs & Deployment Targets")
 
-# 5. Fixed High-End Minimal Device Navigation Track
-st.markdown("""
-<div style="position: fixed; bottom: 0; left: 0; width: 100%; background: #050d1a; border-top: 1px solid #162a4e; padding: 14px 0; display: flex; justify-content: space-around; text-align: center; z-index: 99999;">
-    <div style="color: #3b82f6; font-weight: 700; font-family: 'Space Grotesk', sans-serif; font-size: 11px; letter-spacing: 0.05em; cursor: pointer;">⚡ WORKSPACE</div>
-    <div style="color: #64748b; font-weight: 500; font-family: 'Space Grotesk', sans-serif; font-size: 11px; letter-spacing: 0.05em; cursor: pointer;">📉 COMPRESSION</div>
-    <div style="color: #64748b; font-weight: 500; font-family: 'Space Grotesk', sans-serif; font-size: 11px; letter-spacing: 0.05em; cursor: pointer;">📱 EDGE DEPLOY</div>
-</div>
-""", unsafe_allow_html=True)
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.markdown("""
+    **💻 Supported Platforms**
+    * Google Colab (GPU Training)
+    * VS Code Local Build Environment
+    * Edge Devices (Mobile / Pi)
+    """)
+with col2:
+    st.markdown("""
+    **📚 Engine Libraries**
+    * PyTorch & Transformers
+    * ONNX Runtime Architecture
+    * TensorFlow Lite
+    """)
+with col3:
+    st.markdown("""
+    **📊 Benchmarked Datasets**
+    * SST-2
+    * IMDB Reviews
+    * AG News
+    """)
+
+# Elegant Bottom Sticky Navigation Bar matching light/dark contrast layout
+st.markdown('<div class="bottom-nav" style="position: fixed; bottom: 0; left: 0; width: 100%; padding: 12px 0; display: flex; justify-content: space-around; text-align: center; z-index: 999;"><div style="color: #10b981; font-weight: bold; font-size: 12px; cursor: pointer;">⚡<br>Inference Engine</div><div class="sub-text" style="font-size: 12px; cursor: pointer;">📉<br>Compression Ratio</div><div class="sub-text" style="font-size: 12px; cursor: pointer;">📱<br>Edge Deploy</div></div>', unsafe_allow_html=True)
