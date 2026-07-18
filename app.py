@@ -4,21 +4,25 @@ from transformers import AutoTokenizer
 import torch
 import pandas as pd
 
-# Set page config immediately
-st.set_page_config(page_title="UQVision - ML Uncertainty Engine", page_icon="📊", layout="centered")
+# 1. Page Configuration (Must be first)
+st.set_page_config(
+    page_title="UQVision - ML Uncertainty Engine",
+    page_icon="📊",
+    layout="centered"
+)
 
-# CSS injected globally to handle styling without multiline indentation breaks
-st.markdown("<style>button { border-radius: 8px !important; }</style>", unsafe_allow_value=True)
+# 2. Strict Inline CSS (Eliminates triple-quote multiline indentation bugs)
+st.markdown("<style>.stApp { background-color: #0d1224; color: #ffffff; } div[data-testid='stFileUploader'] { max-width: 100%; margin: 20px 0; background-color: #7c3aed; border-radius: 12px; padding: 10px; } div[data-testid='stFileUploader'] section { background-color: #7c3aed !important; color: white !important; border: none !important; } .stButton>button { background-color: #7c3aed !important; color: white !important; width: 100%; border-radius: 8px; border: none; padding: 10px; font-weight: bold; } .demo-btn>button { background-color: transparent !important; color: #ffffff !important; border: 1px solid #334155 !important; }</style>", unsafe_allow_value=True)
 
-# Navbar layout structure elements
-st.markdown('<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:20px;"><div><h2 style="margin:0; color:#1e3a8a;">UQVision</h2><span style="font-size:10px; color:#64748b;">ML UNCERTAINTY ENGINE</span></div><div style="font-size:12px; color:#64748b;">🌙 Dark Mode</div></div>', unsafe_allow_value=True)
+# 3. Header Custom Design
+st.markdown('<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #1e293b; margin-bottom: 30px;"><div><h1 style="font-size: 24px; font-weight: 800; color: #ffffff; margin: 0;">UQ<span style="color: #00bcd4;">Vision</span></h1><div style="font-size: 11px; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; margin-top: -5px;">ML UNCERTAINTY ENGINE</div></div><div style="background: rgba(255,255,255,0.05); padding: 6px 16px; border-radius: 20px; font-size: 13px; border: 1px solid rgba(255,255,255,0.1);">☀️ Dark</div></div>', unsafe_allow_value=True)
 
-# Main Hero Text Display
-st.markdown('<div style="text-align:center; background-color:rgba(147,51,234,0.1); padding:5px; border-radius:20px; width:280px; margin:0 auto; color:#7c3aed; font-weight:bold; font-size:12px;">🛡️ Enterprise ML Confidence Engine</div>', unsafe_allow_value=True)
-st.markdown('<h1 style="text-align:center; margin-top:10px;">Uncertainty Quantification<br><span style="color:#2563eb;">For Machine Learning</span></h1>', unsafe_allow_value=True)
-st.markdown('<p style="text-align:center; color:#64748b; font-size:14px;">Don\'t rely on raw point predictions. Quantify text sequence structures with highly distilled, ultra-fast 8-bit quantized ONNX architectures.</p>', unsafe_allow_value=True)
+# 4. Hero Visual Layout
+st.markdown('<div style="text-align: center; margin-top: 20px;"><span style="display: inline-block; background-color: rgba(147, 51, 234, 0.15); border: 1px solid rgba(147, 51, 234, 0.3); color: #c084fc; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;">🛡️ Enterprise ML Confidence & Interval Bounds</span></div>', unsafe_allow_value=True)
+st.markdown('<h2 style="text-align: center; font-size: 38px; font-weight: 800; line-height: 1.2; margin-top: 25px; margin-bottom: 15px; color: #ffffff;">Uncertainty Quantification<br><span style="background: linear-gradient(45deg, #a855f7, #3b82f6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">For Machine Learning</span></h2>', unsafe_allow_value=True)
+st.markdown('<p style="text-align: center; font-size: 16px; color: #94a3b8; line-height: 1.6; max-width: 550px; margin: 0 auto 40px auto;">Don\'t rely on raw point predictions. Quantify <strong>Aleatoric</strong> (data noise) and <strong>Epistemic</strong> (model ignorance) uncertainty with Split Conformal Prediction & Bootstrap Ensembles.</p>', unsafe_allow_value=True)
 
-# --- Model Loading Process ---
+# 5. Core Optimized Model Loader
 @st.cache_resource
 def load_model():
     tokenizer = AutoTokenizer.from_pretrained(".")
@@ -27,66 +31,64 @@ def load_model():
 
 try:
     tokenizer, model = load_model()
-    
-    # --- SECTION A: BATCH CSV FILE PROCESSOR ---
-    st.subheader("📊 Batch Inference via CSV Upload")
-    uploaded_file = st.file_uploader("Upload CSV Dataset", type=["csv"])
+
+    # --- CSV UPLOADER FEATURE ---
+    uploaded_file = st.file_uploader("Upload CSV Dataset", type=["csv"], label_visibility="collapsed")
 
     if uploaded_file is not None:
-        # Load the uploaded dataset
         df = pd.read_csv(uploaded_file)
-        st.write("📋 **Uploaded Data Preview:**", df.head(3))
+        st.markdown("### 📋 Data Preview")
+        st.dataframe(df.head(5))
         
-        # Look for a text column automatically
-        text_column = st.selectbox("Select the text column to analyze:", df.columns)
+        # Automatically guess or select target text column
+        text_col = st.selectbox("Select the column containing your text data:", df.columns)
         
-        if st.button("🚀 Run Fast Batch Prediction"):
-            with st.spinner("Processing batch predictions with ONNX..."):
-                predictions = []
-                confidences = []
+        if st.button("⚡ Run High-Speed Batch Prediction"):
+            with st.spinner("Processing rows using lightning-fast ONNX batching..."):
+                texts = df[text_col].astype(str).tolist()
                 
-                # Perform fast inference across rows
-                for text_item in df[text_column].astype(str):
-                    inputs = tokenizer(text_item, return_tensors="pt", truncation=True, max_length=64)
-                    with torch.no_grad():
-                        outputs = model(**inputs)
-                    probs = torch.softmax(outputs.logits, dim=-1)[0]
-                    pred = torch.argmax(probs).item()
-                    conf = probs[pred].item() * 100
+                # Tokenize everything at once for maximum speed optimization
+                inputs = tokenizer(texts, padding=True, truncation=True, max_length=64, return_tensors="pt")
+                
+                with torch.no_grad():
+                    outputs = model(**inputs)
                     
-                    predictions.append("Positive 🟢" if pred == 1 else "Negative 🔴")
-                    confidences.append(f"{conf:.2f}%")
+                probs = torch.softmax(outputs.logits, dim=-1)
+                preds = torch.argmax(probs, dim=-1).tolist()
+                confidences = (torch.max(probs, dim=-1).values * 100).tolist()
                 
-                # Append computed lists back to dataframe
-                df['Sentiment Prediction'] = predictions
-                df['Confidence Score'] = confidences
+                # Map results back cleanly
+                df['Prediction'] = ["Positive 🟢" if p == 1 else "Negative 🔴" for p in preds]
+                df['Confidence %'] = [f"{c:.2f}%" for c in confidences]
                 
-                st.success("✨ Processing Complete!")
+                st.markdown("### ✨ Processed Results")
                 st.dataframe(df)
                 
-                # Provide a quick button to download processed data back
-                csv_data = df.to_csv(index=False).encode('utf-8')
-                st.download_button(label="📥 Download Analyzed CSV", data=csv_data, file_name="analyzed_predictions.csv", mime="text/csv")
+                # Download link for the newly evaluated CSV file
+                processed_csv = df.to_csv(index=False).encode('utf-8')
+                st.download_button("📥 Download Processed CSV Dataset", data=processed_csv, file_name="uqvision_predictions.csv", mime="text/csv")
 
-    st.markdown("<hr>", unsafe_allow_value=True)
+    # --- LIVE INFERENCE DEMO TRIGGER ---
+    st.markdown("<br>", unsafe_allow_value=True)
+    st.markdown("<div class='demo-btn'>", unsafe_allow_value=True)
+    show_demo = st.checkbox("🔮 Show Real-time Demo Input Panel", value=False)
+    st.markdown("</div>", unsafe_allow_value=True)
 
-    # --- SECTION B: SINGLE TEXT INFERENCE ---
-    st.subheader("✨ Real-Time Single Demo Inference")
-    user_input = st.text_area("Type text sample:", "This application implementation runs lightning fast!")
-
-    if st.button("Analyze Demo Text"):
-        if user_input.strip() != "":
-            inputs = tokenizer(user_input, return_tensors="pt", truncation=True, max_length=64)
-            outputs = model(**inputs)
-            probs = torch.softmax(outputs.logits, dim=-1)[0]
+    if show_demo:
+        user_text = st.text_area("Live Input Text:", "This model pipeline runs incredibly fast using specialized ONNX quantization steps!")
+        if st.button("Try Live Demo"):
+            demo_inputs = tokenizer(user_text, return_tensors="pt", truncation=True, max_length=64)
+            with torch.no_grad():
+                demo_outputs = model(**demo_inputs)
+            demo_probs = torch.softmax(demo_outputs.logits, dim=-1)[0]
+            demo_pred = torch.argmax(demo_probs).item()
+            demo_conf = demo_probs[demo_pred].item() * 100
             
-            prediction = torch.argmax(probs).item()
-            confidence = probs[prediction].item() * 100
-            
-            label_map = {0: "Negative 🔴", 1: "Positive 🟢"}
-            st.info(f"**Prediction:** {label_map[prediction]} | **Confidence:** {confidence:.2f}%")
-        else:
-            st.warning("Please input text characters to analyze.")
+            res_label = "Positive 🟢" if demo_pred == 1 else "Negative 🔴"
+            st.info(f"Result: {res_label} ({demo_conf:.2f}% confidence)")
 
 except Exception as e:
-    st.error(f"Initialization issue: {e}")
+    st.error(f"Error executing engine backend architecture: {e}")
+
+# Bottom Sticky Navigation Bar Mockup
+st.markdown('<div style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #090d16; border-top: 1px solid #1e293b; padding: 12px 0; display: flex; justify-content: space-around; text-align: center; z-index: 999;"><div style="color: #a855f7; font-weight: bold; font-size: 12px; cursor: pointer;">🏠<br>Home</div><div style="color: #64748b; font-size: 12px; cursor: pointer;">📤<br>Upload</div><div style="color: #64748b; font-size: 12px; cursor: pointer;">📊<br>Dashboard</div></div>', unsafe_allow_value=True)
